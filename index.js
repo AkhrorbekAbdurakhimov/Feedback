@@ -6,6 +6,7 @@ const app = express();
 const modules = require('./routes')
 const { APP } = require('./config')
 const { errorMessageHandler } = require('./utils/helper')
+const { runBots } = require('./bot')
 
 app.use(cors());
 app.use(helmet());
@@ -26,3 +27,5 @@ app.use((err, req, res, next) => {
 app.listen(APP.PORT, '0.0.0.0', () => {
     console.log(`server started on port: ${APP.PORT}`);
 });
+
+runBots()

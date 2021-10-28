@@ -1,57 +1,25 @@
 const { database } = require('./connection');
 
-class User {
-    static async register(user_details) {
+class Bot {
+    static async registerBot (bot_details) {
         const sql = `
-            INSERT INTO users (
-                account_id,
-                first_name,
-                username
+            INSERT INTO bots (
+                bot_token
             ) values (
-                $1, $2, $3
+                $1
             ) RETURNING *;
         `
-        const result = await database.query(sql, user_details)
+        const result = await database.query(sql, bot_details)
         return result.rows || []
     } 
-    static async getUser(account_id) {
+    
+    static async getBotTokens () {
         const sql = `
-            SELECT
-                *
-            from
-                users
-            WHERE account_id = $1
+            SELECT bot_token FROM bots;
         `
-        const result = await database.query(sql, account_id)
-        return result.rows || []
-    }
-    static async insertMessage (message_details) {
-        const sql = `
-            INSERT INTO messages (
-                account_id,
-                message,
-                date,
-                type
-            ) values (
-                $1, $2, $3, $4
-            ) RETURNING *;
-        `
-        const result = await database.query(sql, message_details)
-        return result.rows || []
-    }
-    static async getMessages () {
-        const sql = `
-            SELECT
-                u.first_name,
-                m.type,
-                m.message,
-                m.date
-                FROM messages m
-            JOIN users u on u.account_id = m.account_id
-        `
-        const result = await database.query(sql )
+        const result = await database.query(sql)
         return result.rows || []
     }
 }
 
-module.exports = User;
+module.exports = Bot;
