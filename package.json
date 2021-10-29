@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "bot": "nodemon bot.js"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +18,13 @@
     "express": "^4.17.1",
     "helmet": "^4.6.0",
     "joi": "^17.4.2",
+    "nodemon": "^2.0.14",
     "pg": "^8.7.1",
+<<<<<<< HEAD
     "telegraf": "^3.33.3",
     "telegraf-i18n": "^6.6.0"
+=======
+    "telegraf": "^3.38.0"
+>>>>>>> 1f579a6a4f29e2f076d16cf2f57bc199e6a14f17
   }
 }
