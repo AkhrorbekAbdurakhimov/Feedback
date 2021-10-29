@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { on } = require('nodemon');
-const { Telegraf } = require('telegraf');
+const path = require('path');
+const  Telegraf = require('telegraf');
 const TelegrafI18n = require('telegraf-i18n')
 const Markup = require('telegraf/markup')
 const Extra = require('telegraf/extra')
@@ -20,10 +21,8 @@ const i18n = new TelegrafI18n({
 
 })
 
-
 bot.use(session())
 bot.use()
-
 
 const { enter, leave } = Stage
 
@@ -56,7 +55,7 @@ const userInfoWizard = new WizardScene('user-info',
   },
   async (ctx) => {
     console.log(r);
-    ctx.wizard.state.userInfo.contact = ctx.message.contact.phone_number;
+    ctx.wizard.state.userInfo.contact = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
     ctx.wizard.state.userInfo.created_at = ctx.message.date;
     //ctx.wizard.state.userInfo.bot_id = ctx.message.reply_to_message
   }
