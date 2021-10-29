@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { on } = require('nodemon');
 const { Telegraf } = require('telegraf');
+const TelegrafI18n = require('telegraf-i18n')
 const Markup = require('telegraf/markup')
 const Extra = require('telegraf/extra')
 const session = require('telegraf/session')
@@ -10,7 +11,18 @@ const Scene = require('telegraf/scenes/base')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
+const i18n = new TelegrafI18n({
+  defaultLanguage: 'uz',
+  allowMissing: false, // Default true
+  directory: path.resolve(__dirname, 'locales'),
+  useSession: true,
+  sessionName: "session"
+
+})
+
+
 bot.use(session())
+bot.use()
 
 
 const { enter, leave } = Stage
@@ -32,7 +44,7 @@ const userInfoWizard = new WizardScene('user-info',
     }
     ctx.wizard.state.userInfo.name = ctx.message.text;
     ctx.reply('Telefon raqamingiz', Extra.markup((markup) => {
-      return markup.resize()
+      return markup.resize().oneTime()
         .keyboard([
           markup.contactRequestButton('Telefon raqam yuborish'),
           
@@ -43,47 +55,12 @@ const userInfoWizard = new WizardScene('user-info',
     return ctx.wizard.next();
   },
   async (ctx) => {
+    console.log(r);
     ctx.wizard.state.userInfo.contact = ctx.message.contact.phone_number;
     ctx.wizard.state.userInfo.created_at = ctx.message.date;
-    ctx.wizard.state.userInfo.bot_id = ctx.message.reply_
-    ctx.reply(ctx.message)
+    //ctx.wizard.state.userInfo.bot_id = ctx.message.reply_to_message
   }
-
-
 )
-
-
-
-
-
-// const nameScene = new Scene('name');
-// nameScene.enter((ctx) => ctx.reply('Ism Familiyangizni kiriting.\n\nNamuna: Behruz Sarvarov'))
-// nameScene.on('text', (ctx) => {
-//     ctx.state.id = ctx.message.from.id;
-//     ctx.state.name = ctx.message.text;
-
-    // ctx.reply('Telefon raqamingiz', Extra.markup((markup) => {
-    //     return markup.resize()
-    //       .keyboard([
-    //         markup.contactRequestButton('Telefon raqam yuborish'),
-            
-    //     ])
-      
-    // }))
-    
-//     console.log(ctx.state);
-// })
-  
-// nameScene.on('contact', (ctx) => {
-//     ctx.state.contact = ctx.message.contact.phone_number;
-//     //console.log(ctx.message);
-//     console.log(ctx.state);
-// })
-
-
-//nameScene.leave((ctx) => ctx.scene.enter('phone'));
-
-
 
 const stage = new Stage([userInfoWizard], { ttl: 10 })
 bot.use(stage.middleware())
