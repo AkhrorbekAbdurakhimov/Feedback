@@ -20,6 +20,20 @@ class Bot {
         const result = await database.query(sql)
         return result.rows || []
     }
+    
+    static async insertUser (user_details) {
+        const sql = `
+            INSERT INTO users (
+                id,
+                first_name,
+                username,
+                profile_picture,
+                bot_id
+            ) values ($1, $2, $3, $4, $5)
+        `
+        const result = await database.query(sql, user_details);
+        return result.rows || []
+    }
 }
 
 module.exports = Bot;
