@@ -27,53 +27,121 @@ bot.use()
 
 const { enter, leave } = Stage
 
+const about = async () => {
+  const result = await bot.telegram.getMe();
+  return result.id;
+}
+
 // User Info Scene
 
 const userInfoWizard = new WizardScene('user-info', 
   (ctx) => {
-    ctx.reply(ctx.i18n.t('name'));
+    ctx.reply(ctx.i18n.t('name.full-name'));
+    // Initialize 'userInfo' object to store data about user
     ctx.wizard.state.userInfo = {};
-    ctx.wizard.state.userInfo.id = ctx.message.from.id;
     return ctx.wizard.next();
   },
   (ctx) => {
-    // validation example
-    if (ctx.message.text.length < 4) {
-      ctx.reply(ctx.i18n.t('name_validation'));
+    // Name Validation
+    if (ctx.message.text.length < 5) {
+      ctx.reply(ctx.i18n.t('name.name-validation'));
       return; 
     }
+    ctx.wizard.state.userInfo.id = ctx.message.from.id;
     ctx.wizard.state.userInfo.name = ctx.message.text;
-    ctx.reply(ctx.i18n.t('phone'), Extra.markup((markup) => {
+    ctx.reply(ctx.i18n.t('phone.phone-number'), Extra.markup((markup) => {
       return markup.resize().oneTime()
         .keyboard([
-          markup.contactRequestButton(ctx.i18n.t('phone_btn')), 
+          markup.contactRequestButton(ctx.i18n.t('phone.phone-btn')), 
       ])
-    
     }))
     
     return ctx.wizard.next();
   },
   async (ctx) => {
-    console.log(r);
+    // if (!(ctx.message.contact || ctx.message.text)) {
+    //   return ctx.reply(ctx.i18n.t('phone.phone-validation'))
+    // }
     ctx.wizard.state.userInfo.contact = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
-    ctx.wizard.state.userInfo.created_at = ctx.message.date;
-    //ctx.wizard.state.userInfo.bot_id = ctx.message.reply_to_message
+    const date = new Date(ctx.message.date * 1000);
+    ctx.wizard.state.userInfo.created_at = date;
+    ctx.wizard.state.userInfo.bot_id = await about();
+
+    //ctx.reply(ctx.wizard.state.userInfo);
+    ctx.reply("Savolingizni yo'llashingiz mumkin.");
+    return ctx.wizard.next();
+  },
+  (ctx) => {
+    ctx.reply()
+    return ctx.scene.leave();
   }
+  
 )
 
 const stage = new Stage([userInfoWizard], { ttl: 10 })
 bot.use(stage.middleware())
 
 bot.start((ctx) => {
-    ctx.reply("Assalomu alaykum. Botimizdan foydalanish uchun iltimos ro'yhatdan o'ting.\n\nBuning uchun, xizmat ko'rsatish 🇺🇿 tilini tanlab oling.\n\n\nЗдравствуйте! Чтобы пользоваться нашим ботом вам необходимо пройти регистрацию. \n\nДавайте для начала выберем 🇷🇺 язык обслуживания.", Extra.markup((markup) => {
-       markup.inlineKeyBoard([markup.callBackButton("🇺🇿 O'zbekcha", "#uz"), markup.callBackButton("🇷🇺 Русский", "#ru")])
-      })
-    )
+    ctx.reply("Assalomu alaykum. Botimizdan foydalanish uchun iltimos ro'yhatdan o'ting.\n\nBuning uchun, xizmat ko'rsatish 🇺🇿 tilini tanlab oling.\n\n\nЗдравствуйте! Чтобы пользоваться нашим ботом вам необходимо пройти регистрацию. \n\nДавайте для начала выберем 🇷🇺 язык обслуживания.", 
+    Extra.markup((m) => m.inlineKeyboard([m.callbackButton("O'zbek tili 🇺🇿", "#lang_uz"), m.callbackButton("Русский язык 🇷🇺", "#lang_ru")])))
 
-    ctx.scene.enter('user-info');
+    //console.log(ctx.message);
 })
 
-bot.action('#uz', (ctx) => ctx.i18n.locale('uz'));
-bot.action('#ru', (ctx) => ctx.i18n.locale('ru'));
+bot.action(/\#(lang)\_\w+/g, (ctx) => {
+  const { match } = ctx;
+
+  if (match.input) {
+    let lang = match.input.split('_')[1];
+    ctx.i18n.locale(lang);
+    ctx.scene.enter('user-info');
+  }
+})
+
+bot.on('message', async (ctx) => {
+  const message_id = ctx.message.message_id;
+  const chat_id = ctx.message.chat.id;
+  const user_id = ctx.message.from.id;
+  const created_at = new Date(ctx.message.date * 1000);
+  const bot_id = await about();
+  //ctx.reply(ctx.message);
+    if (ctx.message.text) {
+      //ctx.reply({ message_id, chat_id, user_id, created_at, bot_id})
+      const text = ctx.message.text;
+    }
+
+    if (ctx.message.photo) {
+      const file_id = ctx.message.photo[1].file_id;
+      const { file_path } = await bot.telegram.getFile(file_id)
+      const download_link = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file_path}`
+      ctx.reply(download_link);
+    }
+
+    if (ctx.message.video) {
+      const file_id = ctx.message.video.file_id;
+      const { file_path } = await bot.telegram.getFile(file_id)
+      const download_link = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file_path}`
+      const mime_type = ctx.message.video.mime_type;
+      ctx.reply(download_link);
+    }
+
+    if (ctx.message.document) {
+      const file_id  = ctx.message.document.file_id;
+      const { file_path } = await bot.telegram.getFile(file_id)
+      const download_link = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file_path}`
+      const mime_type = ctx.message.document.mime_type;
+      ctx.reply(download_link);
+    }
+
+    if (ctx.message.voice) {
+      const file_id = ctx.message.voice.file_id;
+      const { file_path } = await bot.telegram.getFile(file_id)
+      const download_link = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file_path}`
+      const mime_type = ctx.message.voice.mime_type;
+
+      ctx.reply(download_link)
+    }
+})
+
 
 bot.launch();
