@@ -1,4 +1,4 @@
-greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring\n/feedback - *Fikr-mulohaza qoldirish*
+greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring
 output1: Iltmos to'liq ism va familyangizni kiriting. (Masalan Kolimov Anvar)?
 output2: Iltimos telefon raqamingizni kiriting
 output3: Yuborish

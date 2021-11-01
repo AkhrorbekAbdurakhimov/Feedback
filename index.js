@@ -20,6 +20,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+    console.log(err);
     const error = errorMessageHandler(err.status, err.message);
     res.status(err.status || 500).send(error);
 });

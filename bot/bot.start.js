@@ -1,4 +1,5 @@
 const path = require('path');
+const axios = require('axios');
 const Telegraf = require('telegraf');
 const session = require("telegraf/session");
 const Stage = require('telegraf/stage');
@@ -7,9 +8,18 @@ const TelegrafI18n = require('telegraf-i18n');
 const Bot = require('./../database');
 const { Markup } = Telegraf
 
-const inlineMessageRatingKeyboard = Markup.inlineKeyboard([
+const inlineMessageLanguageKeyboard = Markup.inlineKeyboard([
     Markup.callbackButton("🇺🇿 O`zbekcha", 'uzbek'),
     Markup.callbackButton('🇷🇺 Русский', 'russian')
+]).extra()
+
+const inlineMessageFeedbackKeyboarduz = Markup.inlineKeyboard([
+    Markup.callbackButton("Fikr-mulohaza qoldirish", 'feedback'),
+]).extra()
+
+
+const inlineMessageFeedbackKeyboardru = Markup.inlineKeyboard([
+    Markup.callbackButton("Оставить комментарий", 'feedback'),
 ]).extra()
 
 const i18n = new TelegrafI18n({
@@ -23,24 +33,26 @@ const i18n = new TelegrafI18n({
     }
 })
 
-const botStart = async (token) => {
+const botStart = async (token, botId) => {
     const bot = new Telegraf(token)
     bot.use(session());
     bot.use(i18n.middleware());
-    bot.start(ctx => ctx.reply('Tilni tanlang!', inlineMessageRatingKeyboard))
+    bot.start(ctx => {
+        ctx.reply("Botdan to'liq foydalanish uchun tilni tanlang!\nВыберите язык, чтобы использовать все возможности бота!", inlineMessageLanguageKeyboard)
+    })
     bot.action('uzbek', (ctx) => {
         ctx.i18n.locale('uz')
         const message = ctx.i18n.t('greeting', {
             first_name: ctx.from.first_name
         })
-        ctx.replyWithMarkdown(message);
+        ctx.replyWithMarkdown(message, inlineMessageFeedbackKeyboarduz);
     })
     bot.action('russian', (ctx) => {
         ctx.i18n.locale('ru')
         const message = ctx.i18n.t('greeting', {
             first_name: ctx.from.first_name
         })
-        ctx.replyWithMarkdown(message);
+        ctx.replyWithMarkdown(message, inlineMessageFeedbackKeyboardru);
     })
     const feedbackWizard = new WizardScene('feedback-wizard',
         (ctx) => {
@@ -70,8 +82,11 @@ const botStart = async (token) => {
             let currentUserId = await Bot.getUser(ctx.from.id)
             if (!currentUserId.length) {
                 const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.from.id)
-                const fileId = profile_photo ? profile_photo.photos[0][2].file_id : ''
-                const file_url = await ctx.telegram.getFileLink(fileId)
+                let file_url = ''
+                if (profile_photo.total_count) {
+                    const fileId = profile_photo.photos[0][2].file_id
+                    file_url = await ctx.telegram.getFileLink(fileId)
+                }
                 await Bot.insertUser([
                     ctx.from.id,
                     ctx.from.first_name,
@@ -79,7 +94,7 @@ const botStart = async (token) => {
                     ctx.scene.session.user.full_name,
                     ctx.scene.session.user.phone_number,
                     file_url,
-                    ctx.chat.id
+                    botId
                 ])
             }
             return ctx.wizard.next();
@@ -105,7 +120,7 @@ const botStart = async (token) => {
             await Bot.insertMessage([
                 ctx.message.message_id,
                 ctx.from.id,
-                ctx.chat.id,
+                botId,
                 message_type,
                 message,
                 new Date(1000 * ctx.message.date),
@@ -116,9 +131,9 @@ const botStart = async (token) => {
     );
     
     const stage = new Stage([feedbackWizard]);
-    stage.command('feedback', ctx => {
+    stage.action('feedback', ctx => {
         ctx.scene.enter('feedback-wizard');
-    });
+    })
     bot.use(stage.middleware())
     
     bot.startPolling()

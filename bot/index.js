@@ -6,7 +6,7 @@ const runBots = async () => {
     let tokens = await Bot.getBotTokens();
     
     await Promise.map(tokens, async (token) => {
-        await botStart(token.bot_token)
+        await botStart(token.bot_token, token.id)
     })
 }
 
