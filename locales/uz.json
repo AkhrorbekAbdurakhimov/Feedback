@@ -1,6 +1,11 @@
 {
-    "name": "Ism Familiyangizni kiriting.\n\nNamuna: Behruz Sarvarov",
-    "name_validation": "Iltimos, Ism Familiyangizni tog`ri kiriting",
-    "phone": "Telefon raqamingiz",
-    "phone_btn": "Telefon raqam yuborish"
+    "name": {
+        "full-name": "Ism Familiyangizni kiriting.\n\nNamuna: Behruz Sarvarov",
+        "name-validation": "Iltimos, Ism Familiyangizni tog`ri kiriting"
+    },
+    "phone": {
+        "phone-number": "Telefon raqamingizni kiriting",
+        "phone-btn": "Telefon raqam yuborish",
+        "phone-validation": "Iltimos, telefon raqamingizni to'g'ri kiriting."
+    }
 }
