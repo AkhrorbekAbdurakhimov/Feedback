@@ -1,5 +1,4 @@
-greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring\n/help - *Botdan foydalanish uchun qo'llanma*\n/feedback - *Fikr-mulohaza qoldirish*\n/uz - *o'zbek tiliga o'tish*\n/ru - *rus tiliga o'tish*
-help: Ushbu bot orqali siz fikr-mulohaza bilidirishingiz mumkin yuqorida ko'rsatilgan /feedback buyrug'i orqali siz fikr-mulohaza bildirishingiz mukin /uz buyrug'i orqali siz tilni o'zbek tiliga o'zgartirgan mumkin /ru buyrug'i orqali esa tilni rus tiliga o'zgartirishingiz mumkin
+greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring\n/feedback - *Fikr-mulohaza qoldirish*
 output1: Iltmos to'liq ism va familyangizni kiriting. (Masalan Kolimov Anvar)?
 output2: Iltimos telefon raqamingizni kiriting
 output3: Yuborish
