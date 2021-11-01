@@ -10,6 +10,8 @@ const Stage = require('telegraf/stage')
 const WizardScene = require('telegraf/scenes/wizard')
 const Scene = require('telegraf/scenes/base')
 
+const Bot = require('./database/index');
+
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 const i18n = new TelegrafI18n({
@@ -48,7 +50,7 @@ const userInfoWizard = new WizardScene('user-info',
       return; 
     }
     ctx.wizard.state.userInfo.id = ctx.message.from.id;
-    ctx.wizard.state.userInfo.name = ctx.message.text;
+    ctx.wizard.state.userInfo.full_name = ctx.message.text;
     ctx.reply(ctx.i18n.t('phone.phone-number'), Extra.markup((markup) => {
       return markup.resize().oneTime()
         .keyboard([
@@ -62,11 +64,13 @@ const userInfoWizard = new WizardScene('user-info',
     // if (!(ctx.message.contact || ctx.message.text)) {
     //   return ctx.reply(ctx.i18n.t('phone.phone-validation'))
     // }
-    ctx.wizard.state.userInfo.contact = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
+    ctx.wizard.state.userInfo.phone_number = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
     const date = new Date(ctx.message.date * 1000);
     ctx.wizard.state.userInfo.created_at = date;
     ctx.wizard.state.userInfo.bot_id = await about();
 
+    const result = await Bot.insertUser(ctx.wizard.state.userInfo);
+    console.log(result)
     //ctx.reply(ctx.wizard.state.userInfo);
     ctx.reply("Savolingizni yo'llashingiz mumkin.");
     return ctx.wizard.next();
@@ -142,6 +146,8 @@ bot.on('message', async (ctx) => {
       ctx.reply(download_link)
     }
 })
+
+
 
 
 bot.launch();

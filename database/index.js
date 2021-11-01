@@ -33,13 +33,12 @@ class Bot {
         const sql = `
             INSERT INTO users (
                 id,
-                first_name,
-                username,
                 full_name,
                 phone_number,
-                profile_picture,
+                created_at,
                 bot_id
-            ) values ($1, $2, $3, $4, $5, $6, $7)
+            ) values ($1, $2, $3, $4, $5)
+            RETURNING *;
         `
         const result = await database.query(sql, user_details);
         return result.rows || []
