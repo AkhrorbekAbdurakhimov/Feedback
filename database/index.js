@@ -1,19 +1,20 @@
 const { database } = require('./connection');
 
 class Bot {
-    static async registerBot (botDetails) {
+    static async registerBot (details) {
         const sql = `
             INSERT INTO bots (
-                bot_token
+                id,
+                token
             ) VALUES (
-                $1
+                $1, $2
             ) RETURNING *;
         `
-        const result = await database.query(sql, botDetails)
+        const result = await database.query(sql, details)
         return result.rows || []
     } 
     
-    static async insertAdminBots (botDetails) {
+    static async insertAdminBots (details) {
         const sql = `
             INSERT INTO adminbots (
                 admin_id,
@@ -22,15 +23,7 @@ class Bot {
                 $1, $2
             )
         `
-        const result = await database.query(sql, botDetails)
-        return result.rows || []
-    }
-    
-    static async getBotTokens () {
-        const sql = `
-            SELECT id, bot_token FROM bots;
-        `
-        const result = await database.query(sql)
+        const result = await database.query(sql, details)
         return result.rows || []
     }
     
@@ -42,18 +35,20 @@ class Bot {
         return result.rows || []
     }
     
-    static async insertUser (userDetails) {
+    static async insertUser ({id, first_name, username, full_name, phone_number, profile_photo, bot_id}) {
         const sql = `
             INSERT INTO users (
                 id,
+                first_name,
+                username,
                 full_name,
                 phone_number,
-                created_at,
+                profile_photo,
                 bot_id
-            ) values ($1, $2, $3, $4, $5)
+            ) values ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `
-        const result = await database.query(sql, userDetails);
+        const result = await database.query(sql, [id, first_name, username, full_name, phone_number, profile_photo, bot_id]);
         return result.rows || []
     }
     

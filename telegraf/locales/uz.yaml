@@ -1,0 +1,5 @@
+greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring\n/feedback - *Fikr-mulohaza qoldirish*
+full_name: Iltimos to'liq ism va familyangizni kiriting. (Masalan Kolimov Anvar)?
+phone: Iltimos telefon raqamingizni kiriting
+send: Yuborish
+feedback: Iltimos bizga o'z fikr-mulohazalaringizni qoldiring

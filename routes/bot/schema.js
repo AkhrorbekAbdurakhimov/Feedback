@@ -1,9 +1,8 @@
 const Joi = require('joi');
 
 const botRegisterSchema = Joi.object({
-    botToken: Joi.string().required(),
-    botPhoto: Joi.string().optional().default(null),
-    adminId: Joi.number().required(),
+    token: Joi.string().required(),
+    adminId: Joi.number().required()
 });
 
 const adminRegisterSchema = Joi.object({
