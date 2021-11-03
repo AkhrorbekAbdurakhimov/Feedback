@@ -35,7 +35,7 @@ class Bot {
         return result.rows || []
     }
     
-    static async insertUser ({id, first_name, username, full_name, phone_number, profile_photo, bot_id}) {
+    static async insertUser (id, fullName, phoneNumber, createdAt, botId) {
         const sql = `
             INSERT INTO users (
                 id,
@@ -48,7 +48,7 @@ class Bot {
             ) values ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `
-        const result = await database.query(sql, [id, first_name, username, full_name, phone_number, profile_photo, bot_id]);
+        const result = await database.query(sql, [id, fullName, phoneNumber, createdAt, botId]);
         return result.rows || []
     }
     
