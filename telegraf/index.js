@@ -96,44 +96,53 @@ const feedbackWizard = new WizardScene('feedback-wizard',
             await Bot.insertUser(ctx.scene.session.user)
         }
         ctx.reply(ctx.i18n.t('feedback'));
-        return ctx.wizard.next();
-    },
-    async (ctx) => {
-        const bot_id = (await bot.telegram.getMe()).id
-        let message = ctx.message.text, message_type = 'text';
-        if (ctx.message.document) {
-            message = await ctx.telegram.getFileLink(ctx.message.document.file_id)
-            message_type = ctx.message.document.mime_type
-        } 
-        if (ctx.message.photo) {
-            message = await ctx.telegram.getFileLink(ctx.message.photo[2].file_id)
-            message_type = 'photo'
-        }
-        if (ctx.message.voice) {
-            message = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
-            message_type = ctx.message.voice.mime_type
-        }
-        if (ctx.message.video) {
-            message = await ctx.telegram.getFileLink(ctx.message.video.file_id)
-            message_type = ctx.message.video.mime_type
-        }
-        await Bot.insertMessage([
-            ctx.message.message_id,
-            ctx.from.id,
-            bot_id,
-            message_type,
-            message,
-            new Date(1000 * ctx.message.date),
-        ])
         return ctx.scene.leave();
-    },
+    }
 );
 
 const stage = new Stage([feedbackWizard]);
+
 stage.action('feedback', ctx => {
     ctx.scene.enter('feedback-wizard');
 })
+
 bot.use(stage.middleware())
-    
+
+bot.on('message', async (ctx) => {
+    const bot_id = (await bot.telegram.getMe()).id
+    let message = ctx.message.text, message_type = 'text';
+    if (ctx.message.document) {
+        message = await ctx.telegram.getFileLink(ctx.message.document.file_id)
+        message_type = ctx.message.document.mime_type
+    } 
+    if (ctx.message.photo) {
+        message = await ctx.telegram.getFileLink(ctx.message.photo[2].file_id)
+        message_type = 'photo'
+    }
+    if (ctx.message.voice) {
+        message = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
+        message_type = ctx.message.voice.mime_type
+    }
+    if (ctx.message.video) {
+        message = await ctx.telegram.getFileLink(ctx.message.video.file_id)
+        message_type = ctx.message.video.mime_type
+    }
+    await Bot.insertMessage([
+        ctx.message.message_id,
+        ctx.from.id,
+        bot_id,
+        message_type,
+        message,
+        new Date(1000 * ctx.message.date),
+    ])
+})
+
 bot.startPolling()
+
+process.on('message', function(msg) {
+    console.log(msg);
+    bot.telegram.sendMessage(msg.recieverId, msg.message)
+});
     
+    
+        
