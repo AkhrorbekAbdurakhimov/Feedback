@@ -1,23 +1,29 @@
 const { database } = require('./connection');
 
 class Bot {
-    static async registerBot (bot_details) {
+    static async registerBot (details) {
         const sql = `
             INSERT INTO bots (
-                bot_token
-            ) values (
-                $1
+                id,
+                token
+            ) VALUES (
+                $1, $2
             ) RETURNING *;
         `
-        const result = await database.query(sql, bot_details)
+        const result = await database.query(sql, details)
         return result.rows || []
     } 
     
-    static async getBotTokens () {
+    static async insertAdminBots (details) {
         const sql = `
-            SELECT bot_token FROM bots;
+            INSERT INTO adminbots (
+                admin_id,
+                bot_id
+            ) VALUES (
+                $1, $2
+            )
         `
-        const result = await database.query(sql)
+        const result = await database.query(sql, details)
         return result.rows || []
     }
     
@@ -33,17 +39,20 @@ class Bot {
         const sql = `
             INSERT INTO users (
                 id,
+                first_name,
+                username,
                 full_name,
                 phone_number,
-                created_at,
+                profile_photo,
                 bot_id
-            ) values ($1, $2, $3, $4, $5)
+            ) values ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `
         const result = await database.query(sql, [id, fullName, phoneNumber, createdAt, botId]);
         return result.rows || []
     }
-    static async insertMessage (message_details) {
+    
+    static async insertMessage (messageDetails) {
         const sql = `
             INSERT INTO messages (
                 message_id,
@@ -54,7 +63,34 @@ class Bot {
                 message_send_at
             ) values ($1, $2, $3, $4, $5, $6)
         `
-        const result = await database.query(sql, message_details);
+        const result = await database.query(sql, messageDetails);
+        return result.rows || []
+    }
+    
+    static async getMessages (botId) {
+        const sql = `
+            SELECT
+                *
+            FROM
+                messages 
+            where reciever_id = $1
+        `
+        const result = await database.query(sql, [botId]);
+        return result.rows || []
+    }
+    
+    static async registerAdmin (adminDetails) {
+        const sql = `
+            INSERT INTO admins (
+                username,
+                password,
+                full_name,
+                phone_number,
+                profile_picture
+            ) values ($1, md5(md5($2)), $3, $4, $5)
+            returning id
+        `
+        const result = await database.query(sql, adminDetails);
         return result.rows || []
     }
 }
