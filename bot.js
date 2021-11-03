@@ -50,7 +50,7 @@ const userInfoWizard = new WizardScene('user-info',
       return; 
     }
     ctx.wizard.state.userInfo.id = ctx.message.from.id;
-    ctx.wizard.state.userInfo.full_name = ctx.message.text;
+    ctx.wizard.state.userInfo.fullName = ctx.message.text;
     ctx.reply(ctx.i18n.t('phone.phone-number'), Extra.markup((markup) => {
       return markup.resize().oneTime()
         .keyboard([
@@ -64,12 +64,13 @@ const userInfoWizard = new WizardScene('user-info',
     // if (!(ctx.message.contact || ctx.message.text)) {
     //   return ctx.reply(ctx.i18n.t('phone.phone-validation'))
     // }
-    ctx.wizard.state.userInfo.phone_number = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
+    ctx.wizard.state.userInfo.phoneNumber = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
     const date = new Date(ctx.message.date * 1000);
-    ctx.wizard.state.userInfo.created_at = date;
-    ctx.wizard.state.userInfo.bot_id = await about();
-
-    const result = await Bot.insertUser(ctx.wizard.state.userInfo);
+    ctx.wizard.state.userInfo.createdAt = date;
+    ctx.wizard.state.userInfo.botId = await about();
+    const { id, fullName, phoneNumber, createdAt, botId } = ctx.wizaed.state.userInfo;
+    console.log(id, fullName, phoneNumber, createdAt, botId);
+    const result = await Bot.insertUser(id, fullName, phoneNumber, createdAt, botId);
     console.log(result)
     //ctx.reply(ctx.wizard.state.userInfo);
     ctx.reply("Savolingizni yo'llashingiz mumkin.");
