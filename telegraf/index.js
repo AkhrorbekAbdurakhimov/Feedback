@@ -5,6 +5,7 @@ const Stage = require('telegraf/stage');
 const WizardScene = require('telegraf/scenes/wizard');
 const TelegrafI18n = require('telegraf-i18n');
 const Bot = require('../database');
+let botRegistered = false
 const { Markup } = Telegraf
 
 const inlineMessageLanguageKeyboard = Markup.inlineKeyboard([
@@ -57,9 +58,9 @@ bot.action('russian', (ctx) => {
 
 const feedbackWizard = new WizardScene('feedback-wizard',
     async (ctx) => {
-        console.log(ctx.update.callback_query.from.id);
+        botRegistered = true
         ctx.scene.session.user = {}
-        ctx.scene.session.user.id = ctx.update.callback_query.from.id;
+        ctx.scene.session.user.user_id = ctx.update.callback_query.from.id;
         ctx.scene.session.user.bot_id = (await bot.telegram.getMe()).id
         let data = await Bot.getUser(ctx.scene.session.user)
         if (data.length) {
@@ -89,14 +90,14 @@ const feedbackWizard = new WizardScene('feedback-wizard',
     },
     async (ctx) => {
         ctx.scene.session.user.phone_number = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
-        const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.scene.session.user.id);
+        const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.scene.session.user.user_id);
         let file_url = '';
         if (profile_photo.total_count) {
             const fileId = profile_photo.photos[0][2].file_id
             file_url = await ctx.telegram.getFileLink(fileId)
         }
-        ctx.scene.session.user.profile_photo = file_url
-        await Bot.insertUser(ctx.scene.session.user)
+        ctx.scene.session.user.profile_photo = file_url;
+        await Bot.insertUser(ctx.scene.session.user);
         ctx.reply(ctx.i18n.t('feedback'));
         return ctx.scene.leave();
     }
@@ -129,16 +130,18 @@ bot.on('message', async (ctx) => {
         message = await ctx.telegram.getFileLink(ctx.message.video.file_id)
         message_type = ctx.message.video.mime_type
     }
-    await Bot.insertMessage([
-        ctx.message.message_id,
-        ctx.from.id,
-        bot_id,
-        message_type,
-        message,
-        new Date(1000 * ctx.message.date),
-    ])
+    
+    if (botRegistered) {
+        await Bot.insertMessage([
+            ctx.message.message_id,
+            ctx.from.id,
+            bot_id,
+            message_type,
+            message,
+            new Date(1000 * ctx.message.date),
+        ])
+    }
 })
-
 
 process.on('message', function(msg) {
     console.log(msg);

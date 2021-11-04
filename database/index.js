@@ -27,18 +27,18 @@ class Bot {
         return result.rows || []
     }
     
-    static async getUser ({ id, bot_id}) {
+    static async getUser ({ user_id, bot_id}) {
         const sql = `
-            SELECT id FROM users WHERE id = $1 AND bot_id = $2;
+            SELECT * FROM users WHERE user_id = $1 AND bot_id = $2;
         `
-        const result = await database.query(sql, [id, bot_id])
+        const result = await database.query(sql, [user_id, bot_id])
         return result.rows || []
     }
     
-    static async insertUser ({id, first_name, username, full_name, bot_id, phone_number, profile_photo}) {
+    static async insertUser ({user_id, first_name, username, full_name, bot_id, phone_number, profile_photo}) {
         const sql = `
             INSERT INTO users (
-                id,
+                user_id,
                 first_name,
                 username,
                 full_name,
@@ -48,7 +48,7 @@ class Bot {
             ) values ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `
-        const result = await database.query(sql, [id, first_name, username, full_name, phone_number, profile_photo, bot_id]);
+        const result = await database.query(sql, [user_id, first_name, username, full_name, phone_number, profile_photo, bot_id]);
         return result.rows || []
     }
     
