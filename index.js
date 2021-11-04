@@ -1,7 +1,9 @@
+const path = require('path');
 const cluster = require('cluster');
 const workers = {}
 const express = require('express');
 const helmet = require('helmet');
+const multer = require('multer');
 const cors = require('cors');
 
 const app = express();
@@ -10,6 +12,19 @@ const { errorMessageHandler } = require('./utils/helper');
 const botRouter = require('./routes/bot');
 const authRouter = require('./routes/auth');
 const messageRouter = require('./routes/message');
+const fileRouter = require('./routes/file');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(process.cwd(), 'public', 'files'))
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname)
+        cb(null, file.fieldname + '-' + uniqueSuffix)
+    }
+})
+  
+const upload = multer({ storage: storage })
 
 app.use(cors());
 app.use(helmet());
@@ -25,15 +40,17 @@ if (cluster.isMaster) {
         workers[req.body.token] = worker
         next()
     }, botRouter);
-    app.use('/message', (req, res, next) => {
+    app.use('/message', upload.single('message'), (req, res, next) => {
         workers[req.body.token].send({
             from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
-            recieverId: req.body.reciever_id,
-            message: req.body.message
+            recieverId: req.body.recieverId,
+            message: req.file ? req.file.path : req.body.message,
+            type: req.file ? req.file.mimetype : 'text'
         });
         next()
     }, messageRouter)
     app.use('/auth', authRouter);
+    app.use('/file', fileRouter);
     
     app.use((req, res) => {
         res.status(404).send({
