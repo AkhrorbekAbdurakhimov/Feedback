@@ -56,17 +56,23 @@ bot.action('russian', (ctx) => {
 })
 
 const feedbackWizard = new WizardScene('feedback-wizard',
-    (ctx) => {
-        ctx.reply(ctx.i18n.t('full_name'));
+    async (ctx) => {
+        console.log(ctx.update.callback_query.from.id);
         ctx.scene.session.user = {}
+        ctx.scene.session.user.id = ctx.update.callback_query.from.id;
+        ctx.scene.session.user.bot_id = (await bot.telegram.getMe()).id
+        let data = await Bot.getUser(ctx.scene.session.user)
+        if (data.length) {
+            ctx.reply(ctx.i18n.t('feedback'));
+            return ctx.scene.leave();
+        }
+        ctx.reply(ctx.i18n.t('full_name'));
         return ctx.wizard.next();
     },
     async (ctx) => {
-        ctx.scene.session.user.id = ctx.message.from.id;
         ctx.scene.session.user.first_name = ctx.message.from.first_name;
         ctx.scene.session.user.username = ctx.message.from.username;
         ctx.scene.session.user.full_name = ctx.message.text;
-        ctx.scene.session.user.bot_id = (await bot.telegram.getMe()).id
         ctx.reply(ctx.i18n.t('phone'), {
             reply_markup: {
                 keyboard: [[
@@ -83,18 +89,14 @@ const feedbackWizard = new WizardScene('feedback-wizard',
     },
     async (ctx) => {
         ctx.scene.session.user.phone_number = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
-        let data = await Bot.getUser(ctx.scene.session.user.id)
-        if (!data.length) {
-            const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.scene.session.user.id)
-            let file_url = ''
-            if (profile_photo.total_count) {
-                const fileId = profile_photo.photos[0][2].file_id
-                file_url = await ctx.telegram.getFileLink(fileId)
-            }
-            ctx.scene.session.user.profile_photo = file_url
-            console.log(ctx.scene.session.user);
-            await Bot.insertUser(ctx.scene.session.user)
+        const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.scene.session.user.id);
+        let file_url = '';
+        if (profile_photo.total_count) {
+            const fileId = profile_photo.photos[0][2].file_id
+            file_url = await ctx.telegram.getFileLink(fileId)
         }
+        ctx.scene.session.user.profile_photo = file_url
+        await Bot.insertUser(ctx.scene.session.user)
         ctx.reply(ctx.i18n.t('feedback'));
         return ctx.scene.leave();
     }
@@ -137,12 +139,14 @@ bot.on('message', async (ctx) => {
     ])
 })
 
-bot.startPolling()
 
 process.on('message', function(msg) {
     console.log(msg);
     bot.telegram.sendMessage(msg.recieverId, msg.message)
 });
+
+bot.startPolling()
+
     
     
         
