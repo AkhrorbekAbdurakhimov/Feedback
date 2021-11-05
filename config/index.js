@@ -11,4 +11,7 @@ module.exports = {
         port: process.env.DB_PORT,
         database: process.env.DB_NAME,
     },
+    pgConfig: {
+      connectionString: process.env.pg_Config
+    }
 }

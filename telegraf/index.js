@@ -207,6 +207,10 @@ process.on('message', async function(msg) {
     ])
 });
 
+bot.catch((err) => {
+    console.log(err);
+});
+
 bot.startPolling()
 
     

@@ -1,10 +1,11 @@
 const { Pool } = require('pg');
 
-const { DB } = require('./../config');
+const { DB, pgConfig } = require('./../config');
 
 class Database {
   constructor(config) {
     this.pool = new Pool(config || DB);
+    this.pool = new Pool(pgConfig)
   }
 
   query(query, params) {
