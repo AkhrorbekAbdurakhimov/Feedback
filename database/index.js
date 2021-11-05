@@ -77,13 +77,12 @@ class Bot {
     static async insertMessage (messageDetails) {
         const sql = `
             INSERT INTO messages (
-                message_id,
                 sender_id,
                 reciever_id,
                 message_type,
                 message,
                 message_send_at
-            ) values ($1, $2, $3, $4, $5, $6)
+            ) values ($1, $2, $3, $4, $5)
         `
         const result = await database.query(sql, messageDetails);
         return result.rows || []
