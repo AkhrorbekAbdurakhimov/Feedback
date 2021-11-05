@@ -151,7 +151,7 @@ process.on('message', async function(msg) {
         message_id = res.message_id
         date = new Date(100 * res.date)
         from_id = res.from.id
-        message = msg.sendMessage
+        message = msg.message
     } 
     if (msg.type.includes('image')) {
         let res = await bot.telegram.sendPhoto(msg.recieverId, {
@@ -216,3 +216,4 @@ bot.startPolling()
     
     
         
+

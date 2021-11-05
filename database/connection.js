@@ -4,7 +4,7 @@ const { DB, pgConfig } = require('./../config');
 
 class Database {
   constructor(config) {
-    this.pool = new Pool(config || DB);
+    //this.pool = new Pool(config || DB);
     this.pool = new Pool(pgConfig)
   }
 
@@ -17,3 +17,4 @@ class Database {
 }
 
 module.exports = { Database, database: new Database() };
+
