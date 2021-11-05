@@ -5,9 +5,11 @@ class Bot {
         const sql = `
             INSERT INTO bots (
                 id,
+                first_name,
+                username,
                 token
             ) VALUES (
-                $1, $2
+                $1, $2, $3, $4
             ) RETURNING *;
         `
         const result = await database.query(sql, details)

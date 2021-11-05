@@ -4,7 +4,7 @@ const { catchReject } = require('../../utils/helper');
 const { botRegisterSchema } = require('./schema');
 const Bot = require('../../database');
 
-const getBotId = async (token) => (await axios.get(`https://api.telegram.org/bot${token}/getMe`)).data
+const getBot = async (token) => (await axios.get(`https://api.telegram.org/bot${token}/getMe`)).data.result
 
 
 const botRegister = catchReject(async (req, res, next) => {
@@ -22,9 +22,10 @@ const botRegister = catchReject(async (req, res, next) => {
             message: 'This bot is already registered'
         })
     
-    const botId = (await getBotId(value.token)).result.id
-    await Bot.registerBot([botId, value.token])
-    await Bot.insertAdminBots([value.adminId, botId])
+    const details = await getBot(value.token)
+    details.username = '@' + details.username
+    await Bot.registerBot([details.id, details.first_name, details.username, value.token])
+    await Bot.insertAdminBots([value.adminId, details.id])
     res.send({
         status: 200,
         message: "Your bot successfully inserted"
