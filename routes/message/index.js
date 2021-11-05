@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const axios = require('axios');
 const { catchReject } = require('../../utils/helper');
 const Bot = require('../../database');
 
@@ -13,9 +12,9 @@ const getMessages = catchReject(async (req, res, next) => {
 })
 
 const sendMessage = catchReject(async (req, res, next) => {
-    console.log(req.file);
     res.send({
-        status: 200
+        status: 200,
+        message: 'message send successfully'
     })
 })
 

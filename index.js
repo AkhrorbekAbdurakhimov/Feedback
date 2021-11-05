@@ -13,6 +13,7 @@ const botRouter = require('./routes/bot');
 const authRouter = require('./routes/auth');
 const messageRouter = require('./routes/message');
 const fileRouter = require('./routes/file');
+const Bot = require('./database');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -32,14 +33,23 @@ app.use(express.json({ limit: '5MB' }));
     
 if (cluster.isMaster) {
     console.log('Master ' + process.pid + ' has started.');
-    app.use('/bot', (req, res, next) => {
+    ;(async () => {
+        let data = await Bot.getBots()
+        data.forEach(el => {
+            let env = {
+                token: el.token
+            }
+            let worker = cluster.fork(env)
+            workers[el.token] = worker
+        })
+    })()
+    app.use('/bot', botRouter, (req, res) => {
         let env = {
             token: req.body.token
         }
         let worker = cluster.fork(env)
         workers[req.body.token] = worker
-        next()
-    }, botRouter);
+    });
     app.use('/message', upload.single('message'), (req, res, next) => {
         workers[req.body.token].send({
             from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
@@ -58,7 +68,6 @@ if (cluster.isMaster) {
         });
     });
     app.use((err, req, res, next) => {
-        console.log(err);
         const error = errorMessageHandler(err.status, err.message);
         res.status(err.status || 500).send(error);
     });

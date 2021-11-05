@@ -14,6 +14,28 @@ class Bot {
         return result.rows || []
     } 
     
+    static async getToken (token) {
+        const sql = `
+            SELECT 
+                *
+            FROM bots
+            WHERE token = $1;
+        `
+        const result = await database.query(sql, [token])
+        return result.rows || []
+    }
+    
+    static async getBots () {
+        const sql = `
+            SELECT 
+                token
+            FROM bots;
+                
+        `
+        const result = await database.query(sql)
+        return result.rows || []
+    }
+    
     static async insertAdminBots (details) {
         const sql = `
             INSERT INTO adminbots (
@@ -21,7 +43,7 @@ class Bot {
                 bot_id
             ) VALUES (
                 $1, $2
-            )
+            );
         `
         const result = await database.query(sql, details)
         return result.rows || []
