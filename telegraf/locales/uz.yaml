@@ -1,5 +1,5 @@
-greeting: Assalomu alaykum *${first_name}*, bizning botiga xush kelibsiz!\nXizmat sifatini yaxshilash uchun o'z fikr-mulohazalrizni qoldiring
-full_name: Iltimos to'liq ism va familyangizni kiriting. (Masalan *Kolimov Anvar*)?
-phone: Iltimos telefon raqamingizni kiriting
-send: Yuborish
-feedback: Iltimos bizga o'z fikr-mulohazalaringizni qoldiring
+greeting: Assalomu alaykum! Bizning botga xush kelibsiz!\nIltimos, botimizdan foydalanish uchun ro'yhatdan o'ting. Avval xizmat ko'rsatish tilini tanlang.
+full_name: Iltimos, to'liq ism va familiyangizni kiriting.\nNamuna => Behruz Komilov
+phone: Iltimos, telefon raqamingizni kiriting
+send: Telefon raqamni yuborish
+feedback: Savolingizni yo'llang va Admin javobini kuting.

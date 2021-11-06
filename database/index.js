@@ -16,7 +16,7 @@ class Bot {
         return result.rows || []
     } 
     
-    static async getToken (token) {
+    static async getBotsByToken (token) {
         const sql = `
             SELECT 
                 *
@@ -27,7 +27,7 @@ class Bot {
         return result.rows || []
     }
     
-    static async getBots () {
+    static async getTokens () {
         const sql = `
             SELECT 
                 token

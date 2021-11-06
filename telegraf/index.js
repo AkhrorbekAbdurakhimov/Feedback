@@ -38,7 +38,7 @@ const bot = new Telegraf(process.env.token)
 bot.use(session());
 bot.use(i18n.middleware());
 bot.start(ctx => {
-    ctx.reply("Botdan to'liq foydalanish uchun tilni tanlang va ro'yxardan o'ting!\nВыберите язык, чтобы использовать все возможности бота!", inlineMessageLanguageKeyboard)
+    ctx.reply("Botdan to'liq foydalanish uchun tilni tanlang va ro'yxatdan o'ting!\nВыберите язык, чтобы использовать все возможности бота!", inlineMessageLanguageKeyboard)
 })
     
 bot.action('uzbek', (ctx) => {
