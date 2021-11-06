@@ -38,24 +38,18 @@ const bot = new Telegraf(process.env.token)
 bot.use(session());
 bot.use(i18n.middleware());
 bot.start(ctx => {
-    ctx.reply("Botdan to'liq foydalanish uchun tilni tanlang va ro'yxatdan o'ting!\nВыберите язык, чтобы использовать все возможности бота!", inlineMessageLanguageKeyboard)
+    ctx.reply(ctx.i18n.t('greeting'), inlineMessageLanguageKeyboard)
 })
-    
-bot.action('uzbek', (ctx) => {
-    ctx.i18n.locale('uz')
-    const message = ctx.i18n.t('greeting', {
-        first_name: ctx.from.first_name
-    })
-    ctx.replyWithMarkdown(message, inlineMessageFeedbackKeyboarduz);
-})
-    
-bot.action('russian', (ctx) => {
-    ctx.i18n.locale('ru')
-    const message = ctx.i18n.t('greeting', {
-        first_name: ctx.from.first_name
-    })
-    ctx.replyWithMarkdown(message, inlineMessageFeedbackKeyboardru);
-})
+
+function validateName(name) {
+    const regex = /^[a-zA-Z ]{5,30}$/;
+    return regex.test(name);
+}
+
+function validatePhone(phone) {
+    const regex = /998[0-9]{9}$/;
+    return regex.test(phone);
+}
 
 const feedbackWizard = new WizardScene('feedback-wizard',
     async (ctx) => {
@@ -72,6 +66,8 @@ const feedbackWizard = new WizardScene('feedback-wizard',
         return ctx.wizard.next();
     },
     async (ctx) => {
+        const isValid = validateName(ctx.message.text);
+        if (!isValid) return ctx.reply(ctx.i18n.t('name_validation'))
         ctx.scene.session.user.first_name = ctx.message.from.first_name;
         ctx.scene.session.user.username = ctx.message.from.username;
         ctx.scene.session.user.full_name = ctx.message.text;
@@ -90,6 +86,10 @@ const feedbackWizard = new WizardScene('feedback-wizard',
         return ctx.wizard.next();
     },
     async (ctx) => {
+        if(ctx.message.text) {
+            const isValid = validatePhone(ctx.message.text);
+            if (!isValid) return ctx.reply(ctx.i18n.t('phone_validation'));
+        }
         ctx.scene.session.user.phone_number = ctx.message.contact ? ctx.message.contact.phone_number : ctx.message.text;
         const profile_photo = await ctx.telegram.getUserProfilePhotos(ctx.scene.session.user.user_id);
         let file_url = '';
@@ -106,11 +106,17 @@ const feedbackWizard = new WizardScene('feedback-wizard',
 
 const stage = new Stage([feedbackWizard]);
 
-stage.action('feedback', ctx => {
+bot.use(stage.middleware())
+
+bot.action('uzbek', (ctx) => {
+    ctx.i18n.locale('uz')
     ctx.scene.enter('feedback-wizard');
 })
-
-bot.use(stage.middleware())
+    
+bot.action('russian', (ctx) => {
+    ctx.i18n.locale('ru')
+    ctx.scene.enter('feedback-wizard');
+})
 
 bot.on('message', async (ctx) => {
     const bot_id = (await bot.telegram.getMe()).id
@@ -218,11 +224,4 @@ process.on('message', async function(msg) {
 
 bot.catch((err) => {
     console.log(err);
-});
-
-bot.startPolling()
-
-    
-    
-        
-
+}
