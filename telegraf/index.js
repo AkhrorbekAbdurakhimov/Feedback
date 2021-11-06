@@ -110,11 +110,27 @@ stage.action('feedback', ctx => {
     ctx.scene.enter('feedback-wizard');
 })
 
+bot.use(async (ctx, next) => {
+    const bot_id = (await bot.telegram.getMe()).id
+    if (ctx.update.edited_message && botRegistered) {
+        await Bot.insertMessage([
+            ctx.update.edited_message.message_id,
+            ctx.update.edited_message.from.id,
+            bot_id,
+            'text',
+            ctx.update.edited_message.text,
+            new Date(1000 * ctx.update.edited_message.edit_date),
+            'edited'
+        ])
+    }
+    next()
+})
 bot.use(stage.middleware())
 
 bot.on('message', async (ctx) => {
     const bot_id = (await bot.telegram.getMe()).id
     let message = ctx.message.text, message_type = 'text';
+    let status = 'original'
     if (ctx.message.document) {
         message = `/file/${process.env.token}/${ctx.message.document.file_id}`
         message_type = ctx.message.document.mime_type
@@ -134,21 +150,24 @@ bot.on('message', async (ctx) => {
     
     if (botRegistered) {
         await Bot.insertMessage([
+            ctx.message.message_id,
             ctx.from.id,
             bot_id,
             message_type,
             message,
             new Date(1000 * ctx.message.date),
+            status
         ])
     }
 })
 
 process.on('message', async function(msg) {
     try {
-        let message, date, from_id
+        let message, date, from_id, message_id
         if (msg.type === 'text') {
             let res = await bot.telegram.sendMessage(msg.recieverId, msg.message)
             if (res) {
+                message_id = res.message_id
                 date = new Date(100 * res.date)
                 from_id = res.from.id
                 message = msg.message
@@ -159,6 +178,7 @@ process.on('message', async function(msg) {
                 source: msg.message
             })
             if (res) {
+                message_id = res.message_id
                 let fileId = res.photo[1].file_id
                 date = new Date(100 * res.date)
                 from_id = res.from.id
@@ -170,6 +190,7 @@ process.on('message', async function(msg) {
                 source: msg.message
             })
             if (res) {
+                message_id = res.message_id
                 let fileId = res.voice.file_id
                 date = new Date(100 * res.date)
                 from_id = res.from.id
@@ -181,6 +202,7 @@ process.on('message', async function(msg) {
                 source: msg.message
             })
             if (res) {
+                message_id = res.message_id
                 let fileId = res.document.file_id
                 date = new Date(100 * res.date)
                 from_id = res.from.id
@@ -192,6 +214,7 @@ process.on('message', async function(msg) {
                 source: msg.message
             })
             if (res) {
+                message_id = res.message_id
                 let fileId = res.video.file_id
                 date = new Date(100 * res.date)
                 from_id = res.from.id
@@ -204,11 +227,13 @@ process.on('message', async function(msg) {
         
         if (from_id && msg.recieverId && msg.type && message && date) {
             await Bot.insertMessage([
+                message_id,
                 from_id,
                 msg.recieverId,
                 msg.type,
                 message,
                 date,
+                'original'
             ])
         }
     } catch (err) {

@@ -30,6 +30,7 @@ const upload = multer({ storage: storage })
 app.use(cors());
 app.use(helmet());
 app.use(express.json({ limit: '5MB' }));
+app.use(express.static(path.join(__dirname, 'public')));
     
 if (cluster.isMaster) {
     console.log('Master ' + process.pid + ' has started.');
