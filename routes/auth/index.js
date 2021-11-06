@@ -3,7 +3,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const router = require('express').Router();
 const { catchReject } = require('../../utils/helper');
-const { adminRegisterSchema } = require('./schema');
+const { adminRegisterSchema, adminLoginSchema } = require('./schema');
 const Bot = require('../../database');
 
 const registerAdmin = catchReject(async (req, res, next) => {
@@ -18,7 +18,7 @@ const registerAdmin = catchReject(async (req, res, next) => {
     if (value.profilePhoto) {
         avatarUuid = `${uuidv4()}.jpg`;
         value.profilePhoto = value.profilePhoto.replace(/^data:image\/jpeg;base64,/, '').replace(/^data:image\/png;base64,/, '');
-        fs.writeFileSync(path.join(process.cwd(), 'profiles', avatarUuid), value.profilePhoto, 'base64');
+        fs.writeFileSync(path.join(process.cwd(), 'public', 'pictures', avatarUuid), value.profilePhoto, 'base64');
     }
     
     let adminDetails = [
@@ -26,7 +26,7 @@ const registerAdmin = catchReject(async (req, res, next) => {
         value.password,
         value.fullName,
         value.phoneNumber,
-        avatarUuid
+        `/pictures/${avatarUuid}`
     ]
     
     let admin = await Bot.registerAdmin(adminDetails)
@@ -37,6 +37,28 @@ const registerAdmin = catchReject(async (req, res, next) => {
     })
 })
 
+const loginAdmin = catchReject(async (req, res, next) => {
+    const { error, value } = adminLoginSchema.validate(req.body)
+    if (error)
+        return next({
+            status: 400,
+            message: error.details[0].message,
+        })
+        
+    let admin = await Bot.adminLogin(value)
+    if (!admin.length) {
+        return next({
+            status: 401
+        })
+    }
+    
+    res.send({
+        status: 200,
+        data: admin
+    })
+})
+
 router.use('/register', registerAdmin)
+router.use('/login', loginAdmin)
 
 module.exports = router;

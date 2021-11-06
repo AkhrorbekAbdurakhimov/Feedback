@@ -8,4 +8,9 @@ const adminRegisterSchema = Joi.object({
     profilePhoto: Joi.string().optional().default(null)
 })
 
-module.exports = { adminRegisterSchema }
+const adminLoginSchema = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required()
+})
+
+module.exports = { adminRegisterSchema, adminLoginSchema }
