@@ -15,7 +15,7 @@ const botRegister = catchReject(async (req, res, next) => {
             message: error.details[0].message,
         })
         
-    let data = await Bot.getToken(value.token)
+    let data = await Bot.getBotsByToken(value.token)
     if (data.length) 
         return next({
             status: 406,

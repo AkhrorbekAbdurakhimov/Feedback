@@ -34,7 +34,7 @@ app.use(express.json({ limit: '5MB' }));
 if (cluster.isMaster) {
     console.log('Master ' + process.pid + ' has started.');
     ;(async () => {
-        let data = await Bot.getBots()
+        let data = await Bot.getTokens()
         data.forEach(el => {
             let env = {
                 token: el.token
