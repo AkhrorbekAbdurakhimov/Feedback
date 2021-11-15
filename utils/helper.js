@@ -41,6 +41,14 @@ const errorMessageHandler = (status, message = null) => {
                 },
             };
             
+        case 409: 
+            return {
+                type: 'User exists',
+                message: {
+                    en: `Message: ${message}`,
+                },
+            };
+            
         case 500:
             return {
                 type: 'ServerError',

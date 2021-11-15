@@ -29,12 +29,18 @@ const registerAdmin = catchReject(async (req, res, next) => {
         `/pictures/${avatarUuid}`
     ]
     
-    let admin = await Bot.registerAdmin(adminDetails)
-    
-    res.send({
-        status: 200,
-        data: admin
-    })
+    try {
+        let admin = await Bot.registerAdmin(adminDetails)
+        res.send({
+            status: 200,
+            data: admin
+        })
+    } catch (err) {
+        return next({
+            status: 409,
+            message: 'This kind of username has already exists',
+          });
+    }
 })
 
 const loginAdmin = catchReject(async (req, res, next) => {
@@ -58,7 +64,17 @@ const loginAdmin = catchReject(async (req, res, next) => {
     })
 })
 
+const getAdminBots = catchReject(async (req, res, next) => {
+    let adminId = req.params.adminId
+    let bots = await Bot.getAdminBots(adminId)
+    res.send({
+        status: 200,
+        data: bots
+    })
+})
+
 router.use('/register', registerAdmin)
 router.use('/login', loginAdmin)
+router.use('/get-admin-bots/:adminId', getAdminBots)
 
 module.exports = router;

@@ -33,6 +33,16 @@ const botRegister = catchReject(async (req, res, next) => {
     next()
 })
 
+const getBotUsers = catchReject(async (req, res, next) => {
+    let botId = req.params.botId
+    let users = await Bot.getUsers(botId)
+    res.send({
+        status: 200,
+        data: users
+    })
+})
+
 router.post('/register', botRegister);
+router.get('/get-bot-users/:botId', getBotUsers);
 
 module.exports = router;

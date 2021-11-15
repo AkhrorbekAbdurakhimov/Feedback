@@ -59,6 +59,14 @@ class Bot {
         return result.rows || []
     }
     
+    static async getUsers (botId) {
+        const sql = `
+            SELECT * FROM users WHERE bot_id = $1;
+        `
+        const result = await database.query(sql, [botId])
+        return result.rows || [] 
+    }
+    
     static async insertUser ({user_id, first_name, username, full_name, bot_id, phone_number, profile_photo}) {
         const sql = `
             INSERT INTO users (
@@ -127,6 +135,18 @@ class Bot {
             WHERE username = $1 AND password = md5(md5($2)) 
         `
         const result = await database.query(sql, [username, password]);
+        return result.rows || []
+    }
+    
+    static async getAdminBots (adminId) {
+        const sql = `
+            SELECT
+                b.*
+            FROM bots b
+            RIGHT JOIN adminbots ab on ab.bot_id = b.id
+            WHERE ab.admin_id = $1
+        `
+        const result = await database.query(sql, [adminId]);
         return result.rows || []
     }
 }
