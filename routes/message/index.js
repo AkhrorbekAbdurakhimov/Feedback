@@ -4,7 +4,7 @@ const Bot = require('../../database');
 
 const getMessages = catchReject(async (req, res, next) => {
     const botId = req.params.botId
-    let messages = await Bot.getMessages(botId)
+    let messages = await Bot.getMessages(req.query)
     res.send({
         status: 200,
         data: messages
@@ -19,6 +19,6 @@ const sendMessage = catchReject(async (req, res, next) => {
 })
 
 router.use('/send-message', sendMessage);
-router.get('/get-messages/:botId', getMessages);
+router.get('/get-messages', getMessages);
 
 module.exports = router;
