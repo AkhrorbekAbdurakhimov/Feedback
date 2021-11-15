@@ -25,6 +25,7 @@ const i18n = new TelegrafI18n({
     }
 })
 
+console.log(process.env.token)
 const bot = new Telegraf(process.env.token)
 bot.use(session());
 bot.use(i18n.middleware());

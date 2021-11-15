@@ -53,6 +53,7 @@ if (cluster.isMaster) {
     });
     app.use('/message', upload.single('message'), (req, res, next) => {
         if (req.body.token) {
+            console.log(req.body.token);
             workers[req.body.token].send({
                 from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
                 recieverId: req.body.recieverId,
@@ -84,3 +85,4 @@ if (cluster.isMaster) {
     console.log('Worker ' + process.pid + ' has started.');
     require('./telegraf');
 }
+

@@ -100,15 +100,14 @@ class Bot {
         return result.rows || []
     }
     
-    static async getMessages (botId) {
+    static async getMessages ({ botId, userId }) {
         const sql = `
             SELECT
                 *
             FROM
                 messages 
-            where reciever_id = $1
-        `
-        const result = await database.query(sql, [botId]);
+            WHERE reciever_id = $1 OR sender_id = $2 AND reciever_id = $2 OR sender_id = $1;`;
+        const result = await database.query(sql, [botId, userId]);
         return result.rows || []
     }
     
@@ -121,8 +120,8 @@ class Bot {
                 phone_number,
                 profile_picture
             ) values ($1, md5(md5($2)), $3, $4, $5)
-            returning id
-        `
+            returning id;`;
+            
         const result = await database.query(sql, adminDetails);
         return result.rows || []
     }
