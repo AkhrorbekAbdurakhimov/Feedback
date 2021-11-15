@@ -14,15 +14,6 @@ const inlineMessageLanguageKeyboard = Markup.inlineKeyboard([
     Markup.callbackButton('🇷🇺 Русский', 'russian')
 ]).extra()
 
-const inlineMessageFeedbackKeyboarduz = Markup.inlineKeyboard([
-    Markup.callbackButton("Fikr-mulohaza qoldirish", 'feedback'),
-]).extra()
-
-
-const inlineMessageFeedbackKeyboardru = Markup.inlineKeyboard([
-    Markup.callbackButton("Оставить комментарий", 'feedback'),
-]).extra()
-
 const i18n = new TelegrafI18n({
     directory: path.resolve(__dirname, 'locales'),
     defaultLanguage: 'uz',
@@ -37,7 +28,9 @@ const i18n = new TelegrafI18n({
 const bot = new Telegraf(process.env.token)
 bot.use(session());
 bot.use(i18n.middleware());
+
 bot.start(ctx => {
+    console.log('hi');
     ctx.reply(ctx.i18n.t('greeting'), inlineMessageLanguageKeyboard)
 })
 
@@ -251,4 +244,6 @@ process.on('message', async function(msg) {
 
 bot.catch((err) => {
     console.log(err);
-}
+})
+
+bot.startPolling();

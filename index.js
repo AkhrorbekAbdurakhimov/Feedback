@@ -52,12 +52,15 @@ if (cluster.isMaster) {
         workers[req.body.token] = worker
     });
     app.use('/message', upload.single('message'), (req, res, next) => {
-        workers[req.body.token].send({
-            from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
-            recieverId: req.body.recieverId,
-            message: req.file ? req.file.path : req.body.message,
-            type: req.file ? req.file.mimetype : 'text'
-        });
+        if (req.body.token) {
+            workers[req.body.token].send({
+                from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
+                recieverId: req.body.recieverId,
+                message: req.file ? req.file.path : req.body.message,
+                type: req.file ? req.file.mimetype : 'text'
+            });
+        }
+        
         next()
     }, messageRouter)
     app.use('/auth', authRouter);
