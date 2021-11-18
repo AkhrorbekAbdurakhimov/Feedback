@@ -132,6 +132,7 @@ bot.use(stage.middleware())
 bot.on('message', async (ctx) => {
     const bot_id = (await bot.telegram.getMe()).id
     let message = ctx.message.text, message_type = 'text';
+    console.log(ctx.message.chat)
     let status = 'original'
     if (ctx.message.document) {
         message = `/file/${process.env.token}/${ctx.message.document.file_id}`
@@ -170,7 +171,7 @@ process.on('message', async function(msg) {
             let res = await bot.telegram.sendMessage(msg.recieverId, msg.message)
             if (res) {
                 message_id = res.message_id
-                date = new Date(100 * res.date)
+                date = new Date(1000 * res.date)
                 from_id = res.from.id
                 message = msg.message
             }
@@ -182,7 +183,7 @@ process.on('message', async function(msg) {
             if (res) {
                 message_id = res.message_id
                 let fileId = res.photo[1].file_id
-                date = new Date(100 * res.date)
+                date = new Date(1000 * res.date)
                 from_id = res.from.id
                 message = `/file/${process.env.token}/${fileId}`
             }
@@ -194,7 +195,7 @@ process.on('message', async function(msg) {
             if (res) {
                 message_id = res.message_id
                 let fileId = res.voice.file_id
-                date = new Date(100 * res.date)
+                date = new Date(1000 * res.date)
                 from_id = res.from.id
                 message = `/file/${process.env.token}/${fileId}`
             }
@@ -206,7 +207,7 @@ process.on('message', async function(msg) {
             if (res) {
                 message_id = res.message_id
                 let fileId = res.document.file_id
-                date = new Date(100 * res.date)
+                date = new Date(1000 * res.date)
                 from_id = res.from.id
                 message = `/file/${process.env.token}/${fileId}`
             }
@@ -218,7 +219,7 @@ process.on('message', async function(msg) {
             if (res) {
                 message_id = res.message_id
                 let fileId = res.video.file_id
-                date = new Date(100 * res.date)
+                date = new Date(1000 * res.date)
                 from_id = res.from.id
                 message = `/file/${process.env.token}/${fileId}`
             }
