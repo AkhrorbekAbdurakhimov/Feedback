@@ -3,7 +3,6 @@ const { catchReject } = require('../../utils/helper');
 const Bot = require('../../database');
 
 const getMessages = catchReject(async (req, res, next) => {
-    const botId = req.params.botId
     let messages = await Bot.getMessages(req.query)
     res.send({
         status: 200,

@@ -85,4 +85,3 @@ if (cluster.isMaster) {
     console.log('Worker ' + process.pid + ' has started.');
     require('./telegraf');
 }
-
