@@ -106,7 +106,7 @@ class Bot {
                 *
             FROM
                 messages 
-            WHERE reciever_id = $1 OR sender_id = $2 AND reciever_id = $2 OR sender_id = $1;`;
+            WHERE reciever_id = $1 AND sender_id = $2 OR reciever_id = $2 AND sender_id = $1;`;
         const result = await database.query(sql, [botId, userId]);
         return result.rows || []
     }
