@@ -166,79 +166,92 @@ bot.on('message', async (ctx) => {
 
 process.on('message', async function(msg) {
     try {
-        let message, date, from_id, message_id
-        if (msg.type === 'text') {
-            let res = await bot.telegram.sendMessage(msg.recieverId, msg.message)
-            if (res) {
-                message_id = res.message_id
-                date = new Date(1000 * res.date)
-                from_id = res.from.id
-                message = msg.message
+        console.log(msg);
+        if (msg.messageId) {
+                console.log(typeof messageId)
+                let res = await bot.telegram.editMessageText(msg.chatId, msg.messageId, msg.message);
+                console.log(res);
+                if (res) {
+                    await Bot.editMessage(msg.messageId, msg.message);
+                }
+            
+        } else {
+            let message, date, from_id, message_id
+            if (msg.type === 'text') {
+                let res = await bot.telegram.sendMessage(msg.recieverId, msg.message)
+                console.log(res.from.id);
+                if (res) {
+                    message_id = res.message_id
+                    date = new Date(1000 * res.date)
+                    from_id = res.from.id
+                    message = msg.message
+                }
+            } 
+            if (msg.type.includes('image')) {
+                let res = await bot.telegram.sendPhoto(msg.recieverId, {
+                    source: msg.message
+                })
+                if (res) {
+                    message_id = res.message_id
+                    let fileId = res.photo[1].file_id
+                    date = new Date(1000 * res.date)
+                    from_id = res.from.id
+                    message = `/file/${process.env.token}/${fileId}`
+                }
             }
-        } 
-        if (msg.type.includes('image')) {
-            let res = await bot.telegram.sendPhoto(msg.recieverId, {
-                source: msg.message
-            })
-            if (res) {
-                message_id = res.message_id
-                let fileId = res.photo[1].file_id
-                date = new Date(1000 * res.date)
-                from_id = res.from.id
-                message = `/file/${process.env.token}/${fileId}`
+            if (msg.type.includes('audio')) {
+                let res = await bot.telegram.sendAudio(msg.recieverId, {
+                    source: msg.message
+                })
+                if (res) {
+                    message_id = res.message_id
+                    let fileId = res.voice.file_id
+                    date = new Date(1000 * res.date)
+                    from_id = res.from.id
+                    message = `/file/${process.env.token}/${fileId}`
+                }
             }
-        }
-        if (msg.type.includes('audio')) {
-            let res = await bot.telegram.sendAudio(msg.recieverId, {
-                source: msg.message
-            })
-            if (res) {
-                message_id = res.message_id
-                let fileId = res.voice.file_id
-                date = new Date(1000 * res.date)
-                from_id = res.from.id
-                message = `/file/${process.env.token}/${fileId}`
+            if (msg.type.includes('application')) {
+                let res = await bot.telegram.sendDocument(msg.recieverId, {
+                    source: msg.message
+                })
+                if (res) {
+                    message_id = res.message_id
+                    let fileId = res.document.file_id
+                    date = new Date(1000 * res.date)
+                    from_id = res.from.id
+                    message = `/file/${process.env.token}/${fileId}`
+                }
             }
-        }
-        if (msg.type.includes('application')) {
-            let res = await bot.telegram.sendDocument(msg.recieverId, {
-                source: msg.message
-            })
-            if (res) {
-                message_id = res.message_id
-                let fileId = res.document.file_id
-                date = new Date(1000 * res.date)
-                from_id = res.from.id
-                message = `/file/${process.env.token}/${fileId}`
+            if (msg.type.includes('video')) {
+                let res = await bot.telegram.sendVideo(msg.recieverId, {
+                    source: msg.message
+                })
+                if (res) {
+                    message_id = res.message_id
+                    let fileId = res.video.file_id
+                    date = new Date(1000 * res.date)
+                    from_id = res.from.id
+                    message = `/file/${process.env.token}/${fileId}`
+                }
             }
-        }
-        if (msg.type.includes('video')) {
-            let res = await bot.telegram.sendVideo(msg.recieverId, {
-                source: msg.message
-            })
-            if (res) {
-                message_id = res.message_id
-                let fileId = res.video.file_id
-                date = new Date(1000 * res.date)
-                from_id = res.from.id
-                message = `/file/${process.env.token}/${fileId}`
+            if (msg.type !== 'text' && msg.message) {
+                fs.unlinkSync(msg.message)
             }
-        }
-        if (msg.type !== 'text' && msg.message) {
-            fs.unlinkSync(msg.message)
+
+            if (from_id && msg.recieverId && msg.type && message && date) {
+                await Bot.insertMessage([
+                    message_id,
+                    from_id,
+                    msg.recieverId,
+                    msg.type,
+                    message,
+                    date,
+                    'original'
+                ])
+            }
         }
         
-        if (from_id && msg.recieverId && msg.type && message && date) {
-            await Bot.insertMessage([
-                message_id,
-                from_id,
-                msg.recieverId,
-                msg.type,
-                message,
-                date,
-                'original'
-            ])
-        }
     } catch (err) {
         throw err
     }
@@ -249,3 +262,4 @@ bot.catch((err) => {
 })
 
 bot.startPolling();
+

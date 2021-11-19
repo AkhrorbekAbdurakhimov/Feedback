@@ -51,17 +51,30 @@ if (cluster.isMaster) {
         let worker = cluster.fork(env)
         workers[req.body.token] = worker
     });
-    app.use('/message', upload.single('message'), (req, res, next) => {
+    app.use('/message', upload.single('message'), async (req, res, next) => {
+        const message = await Bot.getMessage(req.body.messageId);
+        console.log(message)
         if (req.body.token) {
-            console.log(req.body.token);
-            workers[req.body.token].send({
-                from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
-                recieverId: req.body.recieverId,
-                message: req.file ? req.file.path : req.body.message,
-                type: req.file ? req.file.mimetype : 'text'
-            });
+            if (message.length > 0) {
+                workers[req.body.token].send({
+                    from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
+                    chatId: req.body.chatId,
+                    messageId: req.body.messageId,
+                    message: req.file ? req.file.path : req.body.message,
+                    type: req.file ? req.file.mimetype : 'text'
+                })
+            } else {
+                console.log(req.body);
+                workers[req.body.token].send({
+                    from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
+                    recieverId: req.body.recieverId,
+                    message: req.file ? req.file.path : req.body.message,
+                    type: req.file ? req.file.mimetype : 'text'
+                });
+            }
         }
-        
+
+       
         next()
     }, messageRouter)
     app.use('/auth', authRouter);
