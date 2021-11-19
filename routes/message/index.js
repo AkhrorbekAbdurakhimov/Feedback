@@ -13,11 +13,19 @@ const getMessages = catchReject(async (req, res, next) => {
 const sendMessage = catchReject(async (req, res, next) => {
     res.send({
         status: 200,
-        message: 'message send successfully'
+        message: 'message sent successfully'
+    })
+})
+
+const editMessage = catchReject(async (req, res, next) => {
+    res.send({
+        status: 204,
+        message: 'message edited successfully'
     })
 })
 
 router.use('/send-message', sendMessage);
 router.get('/get-messages', getMessages);
+router.post('/edit-message', editMessage);
 
 module.exports = router;

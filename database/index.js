@@ -110,7 +110,21 @@ class Bot {
         const result = await database.query(sql, [botId, userId]);
         return result.rows || []
     }
+
+    static async getMessage(messageId) {
+        const sql = `SELECT * FROM messages WHERE message_id = $1;`;
+
+        const result = await database.query(sql, [messageId]);
+        return result.rows || []
+    }
     
+    static async editMessage({ messageId, message }) {
+        const sql = `UPDATE messages SET message = $2 WHERE message_id = $1;`;
+
+        const result = await database.query(sql, [messageId, message]);
+        return result.rows || []
+    }
+
     static async registerAdmin (adminDetails) {
         const sql = `
             INSERT INTO admins (
