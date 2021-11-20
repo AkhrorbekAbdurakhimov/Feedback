@@ -53,7 +53,7 @@ if (cluster.isMaster) {
     });
     app.use('/message', upload.single('message'), async (req, res, next) => {
         const message = await Bot.getMessage(req.body.messageId);
-        console.log(message)
+        //console.log(message)
         if (req.body.token) {
             if (message.length > 0) {
                 workers[req.body.token].send({
