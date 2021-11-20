@@ -166,14 +166,19 @@ bot.on('message', async (ctx) => {
 
 process.on('message', async function(msg) {
     try {
-        console.log(msg);
+        console.log(msg.messageId);
         if (msg.messageId) {
-                console.log(typeof messageId)
-                let res = await bot.telegram.editMessageText(msg.chatId, msg.messageId, msg.message);
-                console.log(res);
+            if (msg.message) {
+                let res = await bot.telegram.editMessageText(msg.chatId, msg.messageId, msg.messageId, msg.message);
                 if (res) {
                     await Bot.editMessage(msg.messageId, msg.message);
                 }
+            } else {
+                let res = await bot.telegram.deleteMessage(msg.chatId, msg.messageId);
+                if (res) {
+                    await Bot.deleteMessage(msg.messageId)
+                }
+            }
             
         } else {
             let message, date, from_id, message_id

@@ -24,8 +24,16 @@ const editMessage = catchReject(async (req, res, next) => {
     })
 })
 
+const deleteMessage = catchReject(async (req, res, next) => {
+    res.send({
+        status: 204,
+        message: 'message deleted successfully'
+    })
+})
+
 router.use('/send-message', sendMessage);
 router.get('/get-messages', getMessages);
 router.post('/edit-message', editMessage);
+router.post('/delete-message', deleteMessage);
 
 module.exports = router;

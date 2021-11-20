@@ -118,10 +118,17 @@ class Bot {
         return result.rows || []
     }
     
-    static async editMessage({ messageId, message }) {
+    static async editMessage(messageId, message) {
         const sql = `UPDATE messages SET message = $2 WHERE message_id = $1;`;
 
         const result = await database.query(sql, [messageId, message]);
+        return result.rows || []
+    }
+
+    static async deleteMessage(messageId) {
+        const sql = `DELETE FROM messages WHERE message_id = $1;`;
+
+        const result = await database.query(sql, [messageId]);
         return result.rows || []
     }
 
