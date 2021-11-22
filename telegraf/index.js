@@ -166,7 +166,6 @@ bot.on('message', async (ctx) => {
 
 process.on('message', async function(msg) {
     try {
-        console.log(msg.messageId);
         if (msg.messageId) {
             if (msg.message) {
                 let res = await bot.telegram.editMessageText(msg.chatId, msg.messageId, msg.messageId, msg.message);
