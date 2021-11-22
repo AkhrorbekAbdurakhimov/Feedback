@@ -52,14 +52,13 @@ if (cluster.isMaster) {
         workers[req.body.token] = worker
     });
     app.use('/message', upload.single('message'), async (req, res, next) => {
-        const message = await Bot.getMessage(req.body.messageId);
-        //console.log(message)
-        if (req.body.token) {
+        const message = await Bot.getMessage(req.body.messageId || req.query.messageId);
+        if (req.body.token || req.query.token) {
             if (message.length > 0) {
-                workers[req.body.token].send({
-                    from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token].process.pid,
-                    chatId: req.body.chatId,
-                    messageId: req.body.messageId,
+                workers[req.body.token || req.query.token].send({
+                    from: 'This is from master ' + process.pid + ' to worker ' + workers[req.body.token ||req.query.token].process.pid,
+                    chatId: req.body.chatId || req.query.chatId,
+                    messageId: req.body.messageId || req.query.messageId,
                     message: req.file ? req.file.path : req.body.message,
                     type: req.file ? req.file.mimetype : 'text'
                 })

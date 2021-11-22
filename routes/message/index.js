@@ -34,6 +34,6 @@ const deleteMessage = catchReject(async (req, res, next) => {
 router.use('/send-message', sendMessage);
 router.get('/get-messages', getMessages);
 router.post('/edit-message', editMessage);
-router.post('/delete-message', deleteMessage);
+router.delete('/delete-message', deleteMessage);
 
 module.exports = router;
