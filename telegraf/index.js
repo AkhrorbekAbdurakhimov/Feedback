@@ -7,12 +7,10 @@ const WizardScene = require('telegraf/scenes/wizard');
 const TelegrafI18n = require('telegraf-i18n');
 const Bot = require('../database');
 let botRegistered = false
-const { Markup } = Telegraf
+const { Markup, Extra } = Telegraf
 
-const inlineMessageLanguageKeyboard = Markup.inlineKeyboard([
-    Markup.callbackButton("🇺🇿 O`zbekcha", 'uzbek'),
-    Markup.callbackButton('🇷🇺 Русский', 'russian')
-]).extra()
+const lang_opts = Extra.markup((m) => m.inlineKeyboard([m.callbackButton("Русский язык 🇷🇺", "#lang_ru"), m.callbackButton("O'zbek tili 🇺🇿", "#lang_uz")]));
+
 
 const i18n = new TelegrafI18n({
     directory: path.resolve(__dirname, 'locales'),
@@ -30,9 +28,12 @@ const bot = new Telegraf(process.env.token)
 bot.use(session());
 bot.use(i18n.middleware());
 
+// bot.command("start", async (ctx) => {
+//     let data = await Bot
+// })
+
 bot.start(ctx => {
-    console.log('hi');
-    ctx.reply(ctx.i18n.t('greeting'), inlineMessageLanguageKeyboard)
+    ctx.reply(ctx.i18n.t('greeting'), lang_opts)
 })
 
 function validateName(name) {
@@ -102,12 +103,12 @@ const stage = new Stage([feedbackWizard]);
 
 bot.use(stage.middleware())
 
-bot.action('uzbek', (ctx) => {
+bot.action('#lang_ru', (ctx) => {
     ctx.i18n.locale('uz')
     ctx.scene.enter('feedback-wizard');
 })
     
-bot.action('russian', (ctx) => {
+bot.action('#lang_uz', (ctx) => {
     ctx.i18n.locale('ru')
     ctx.scene.enter('feedback-wizard');
 })
