@@ -105,11 +105,13 @@ bot.use(stage.middleware())
 bot.action('uzbek', (ctx) => {
     ctx.i18n.locale('uz')
     ctx.scene.enter('feedback-wizard');
+    ctx.answerCbQuery();
 })
     
 bot.action('russian', (ctx) => {
     ctx.i18n.locale('ru')
     ctx.scene.enter('feedback-wizard');
+    ctx.answerCbQuery()
 })
 
 bot.use(async (ctx, next) => {
