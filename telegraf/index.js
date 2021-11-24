@@ -6,7 +6,8 @@ const Stage = require('telegraf/stage');
 const WizardScene = require('telegraf/scenes/wizard');
 const TelegrafI18n = require('telegraf-i18n');
 const Bot = require('../database');
-let botRegistered = false
+let botRegistered = false;
+let language;
 const { Markup } = Telegraf
 
 const inlineMessageLanguageKeyboard = Markup.inlineKeyboard([
@@ -51,6 +52,7 @@ const feedbackWizard = new WizardScene('feedback-wizard',
         ctx.scene.session.user = {}
         ctx.scene.session.user.user_id = ctx.update.callback_query.from.id;
         ctx.scene.session.user.bot_id = (await bot.telegram.getMe()).id
+        ctx.scene.session.user.language = language;
         let data = await Bot.getUser(ctx.scene.session.user)
         if (data.length) {
             ctx.reply(ctx.i18n.t('feedback'));
@@ -104,12 +106,14 @@ bot.use(stage.middleware())
 
 bot.action('uzbek', (ctx) => {
     ctx.i18n.locale('uz')
+    language = "🇺🇿 O'zbekcha";
     ctx.scene.enter('feedback-wizard');
     ctx.answerCbQuery();
 })
     
 bot.action('russian', (ctx) => {
     ctx.i18n.locale('ru')
+    language = '🇷🇺 Русский'
     ctx.scene.enter('feedback-wizard');
     ctx.answerCbQuery()
 })
