@@ -1,9 +1,16 @@
 greeting: > 
   Assalomu alaykum! Bizning botga xush kelibsiz!
-  Iltimos, botimizdan foydalanish uchun ro'yhatdan o'ting. Avval xizmat ko'rsatish tilini tanlang.
+  Iltimos, botimizdan foydalanish uchun ro'yhatdan o'ting. 
+  
+
+  Avval xizmat ko'rsatish tilini tanlang.
+
 
   Здравствуйте! Добро пожаловать в наш бот!
-  Пожалуйста, зарегистрируйтесь, чтобы использовать нашего бота. Сначала выберите язык обслуживания.
+  Пожалуйста, зарегистрируйтесь, чтобы использовать нашего бота. 
+
+  
+  Сначала выберите язык обслуживания.
 full_name: > 
   Введите свое имя и фамилию.  
   Пример: Бехруз Комилов
