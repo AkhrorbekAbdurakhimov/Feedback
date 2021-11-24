@@ -269,4 +269,3 @@ bot.catch((err) => {
 })
 
 bot.startPolling();
-
