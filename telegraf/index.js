@@ -148,7 +148,7 @@ bot.on('message', async (ctx) => {
         message = `/file/${process.env.token}/${ctx.message.photo[2].file_id}`
         message_type = 'photo'
     }
-    if (ctx.message.voice) {
+    if (ctx.message.audio) {
         message = `/file/${process.env.token}/${ctx.message.voice.file_id}`
         message_type = ctx.message.voice.mime_type
     }
@@ -187,10 +187,9 @@ process.on('message', async function(msg) {
             }
             
         } else {
-            let message, date, from_id, message_id
+            console.log(msg);
             if (msg.type === 'text') {
                 let res = await bot.telegram.sendMessage(msg.recieverId, msg.message)
-                console.log(res.from.id);
                 if (res) {
                     message_id = res.message_id
                     date = new Date(1000 * res.date)
@@ -216,7 +215,7 @@ process.on('message', async function(msg) {
                 })
                 if (res) {
                     message_id = res.message_id
-                    let fileId = res.voice.file_id
+                    let fileId = res.audio.file_id
                     date = new Date(1000 * res.date)
                     from_id = res.from.id
                     message = `/file/${process.env.token}/${fileId}`
