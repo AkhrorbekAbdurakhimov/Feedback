@@ -17,6 +17,7 @@ full_name: >
 name_validation: Iltimos, ism familiyangizni namunadagidek kiriting.
 phone: > 
   Telefon raqamingizni kiriting.
+  
   Namuna: +998901234567
 phone_validation: Iltimos, telefon raqamingizni namunadagidek kiriting.
 send: Telefon raqamni yuborish
