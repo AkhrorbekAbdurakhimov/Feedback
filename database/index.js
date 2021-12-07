@@ -61,7 +61,23 @@ class Bot {
     
     static async getUsers (botId) {
         const sql = `
-            SELECT * FROM users WHERE bot_id = $1;
+            SELECT 
+                u.*,
+                (
+                  SELECT
+                     jsonb_build_object('message', message, 'message_send_at', message_send_at)
+                  FROM
+                     messages
+                  WHERE 
+                     sender_id = user_id OR reciever_id = user_id
+                  ORDER BY 
+                     message_send_at desc
+                  LIMIT 1
+                ) as message
+            FROM 
+                users u
+            WHERE 
+                bot_id = $1
         `
         const result = await database.query(sql, [botId])
         return result.rows || [] 
