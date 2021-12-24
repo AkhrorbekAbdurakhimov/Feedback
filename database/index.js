@@ -72,7 +72,7 @@ class Bot {
                 u.*,
                 (
                   SELECT
-                     jsonb_build_object('message', message, 'message_send_at', message_send_at)
+                     jsonb_build_object('message', message, 'message_send_at', message_send_at, 'type', message_type)
                   FROM
                      messages
                   WHERE 
