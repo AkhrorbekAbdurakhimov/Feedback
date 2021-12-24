@@ -260,6 +260,7 @@ process.on('message', async function(msg) {
                     'original'
                 ])
             }
+            
         }
         
     } catch (err) {

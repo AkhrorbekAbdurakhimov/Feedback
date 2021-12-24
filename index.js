@@ -13,6 +13,7 @@ const botRouter = require('./routes/bot');
 const authRouter = require('./routes/auth');
 const messageRouter = require('./routes/message');
 const fileRouter = require('./routes/file');
+//require('./utils/updateProfilePhoto')();
 const Bot = require('./database');
 
 const storage = multer.diskStorage({
