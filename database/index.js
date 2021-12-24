@@ -26,6 +26,13 @@ class Bot {
         const result = await database.query(sql, [token])
         return result.rows || []
     }
+
+    static async getAdminInfo(id) {
+        const sql = `SELECT id, username, phone_number, profile_picture, full_name FROM admins WHERE id = $1;`;
+
+        const result = await database.query(sql, [id]);
+        return result.rows || []
+    }
     
     static async getTokens () {
         const sql = `

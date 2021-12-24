@@ -260,6 +260,7 @@ process.on('message', async function(msg) {
                     'original'
                 ])
             }
+            
         }
         
     } catch (err) {
@@ -267,8 +268,8 @@ process.on('message', async function(msg) {
     }
 });
 
-bot.catch((err) => {
-    console.log(err);
+bot.catch((err, ctx) => {
+    console.log(`Ooops, encountered an error for ${ctx.updateType}`, err)
 })
 
 bot.startPolling();

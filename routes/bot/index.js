@@ -42,7 +42,15 @@ const getBotUsers = catchReject(async (req, res, next) => {
     })
 })
 
+const getAdmin = catchReject(async (req, res, next) => {
+    const adminId = req.params.id;
+    const admin = await Bot.getAdminInfo(adminId);
+
+    res.send(admin);
+})
+
 router.post('/register', botRegister);
 router.get('/get-bot-users/:botId', getBotUsers);
+router.get('/admin/:id', getAdmin);
 
 module.exports = router;
